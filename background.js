@@ -10,7 +10,11 @@ let time = 0;
 let currentGraph = 0;
 let transition = 0;
 const transitionSpeed = 0.004;
-const graphs = 10;
+const graphs = 5;
+
+// Track animation progress (0 to 1)
+let animationProgress = 0;
+const animationDuration = 300; // frames
 
 window.addEventListener('resize', () => {
     width = window.innerWidth;
@@ -20,7 +24,7 @@ window.addEventListener('resize', () => {
 });
 
 function getScale() {
-    return Math.min(width, height) / 3;
+    return Math.min(width, height) / 3 * Math.min(animationProgress * 2, 1);
 }
 
 function getPoint(graphIndex, theta) {
@@ -28,53 +32,33 @@ function getPoint(graphIndex, theta) {
     let a, r, n;
     
     switch(graphIndex) {
-        case 0:
+        case 0: // Butterfly Curve
             a = (Math.exp(Math.cos(theta)) - 2 * Math.cos(4*theta) + Math.pow(Math.sin(theta/12), 5)) * scale;
             return {x: a * Math.cos(theta), y: a * Math.sin(theta)};
-        case 1:
+            
+        case 1: // Rose Curve
             n = 5;
             a = (35 + 25 * Math.sin(time/100)) * (scale / 50);
             r = a * Math.sin(n * theta);
             return {x: r * Math.cos(theta), y: r * Math.sin(theta)};
-        case 2:
+            
+        case 2: // Cardioid
             a = (30 + 20 * Math.sin(time/80)) * (scale / 50);
             r = a * (1 + Math.cos(theta));
             return {x: r * Math.cos(theta), y: r * Math.sin(theta)};
-        case 3:
+            
+        case 3: // Astroid
             a = (40 + 30 * Math.cos(time/120)) * (scale / 50);
             return {x: a * Math.pow(Math.cos(theta), 3), y: a * Math.pow(Math.sin(theta), 3)};
-        case 4:
+            
+        case 4: // Lissajous Curve
             a = scale * 0.8;
             const A = 2, B = 3;
             return {
                 x: a * Math.sin(A * theta + time/200),
                 y: a * Math.sin(B * theta)
             };
-        case 5:
-            a = scale * 0.6;
-            const k = 3.5;
-            r = a * (k + 1) * Math.cos(theta) - a * Math.cos((k + 1) * theta);
-            const r2 = a * (k + 1) * Math.sin(theta) - a * Math.sin((k + 1) * theta);
-            return {x: r, y: r2};
-        case 6:
-            a = 0.1;
-            r = scale * 0.3 * Math.exp(a * theta);
-            return {x: r * Math.cos(theta), y: r * Math.sin(theta)};
-        case 7:
-            a = scale * 0.7;
-            const R = 5, r_val = 3, d = 5;
-            r = (R - r_val) * Math.cos(theta) + d * Math.cos(((R - r_val) / r_val) * theta);
-            const r3 = (R - r_val) * Math.sin(theta) - d * Math.sin(((R - r_val) / r_val) * theta);
-            return {x: r * 0.1, y: r3 * 0.1};
-        case 8:
-            a = scale * 0.4;
-            r = a * Math.sin(theta) / theta;
-            if (!isFinite(r)) r = a;
-            return {x: r * Math.cos(theta), y: r * Math.sin(theta)};
-        case 9:
-            a = scale * 0.5;
-            r = a * Math.pow(Math.sin(theta), 2) / (2 + Math.cos(theta));
-            return {x: r * Math.cos(theta), y: r * Math.sin(theta)};
+            
         default:
             return {x: 0, y: 0};
     }
@@ -85,16 +69,25 @@ function lerp(a, b, t) {
 }
 
 function animate() {
+    // Clear with fade effect
     ctx.fillStyle = 'rgba(5, 5, 16, 0.1)';
     ctx.fillRect(0, 0, width, height);
     
     ctx.save();
     
-    // ONE BIG CENTER GRAPH (like before)
-    ctx.translate(width / 2, height / 2);
+    // Start from bottom-right corner and move to center
+    const startX = width * 0.8;
+    const startY = height * 0.8;
+    const endX = width / 2;
+    const endY = height / 2;
+    
+    const currentX = lerp(startX, endX, animationProgress);
+    const currentY = lerp(startY, endY, animationProgress);
+    
+    ctx.translate(currentX, currentY);
     
     ctx.beginPath();
-    const steps = 600;
+    const steps = 500;
     
     for (let i = 0; i <= steps; i++) {
         const theta = (i / steps) * Math.PI * 2;
@@ -111,17 +104,23 @@ function animate() {
         }
     }
     
-    // Reduced opacity for better text visibility
-    ctx.strokeStyle = `rgba(0, 255, 255, 0.5)`;
+    // Graph styling with reduced opacity
+    const opacity = 0.4 + 0.2 * Math.sin(time/50);
+    ctx.strokeStyle = `rgba(0, 255, 255, ${opacity})`;
     ctx.lineWidth = 2;
-    ctx.shadowBlur = 25;
-    ctx.shadowColor = 'rgba(0, 255, 255, 0.4)';
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = 'rgba(0, 255, 255, 0.3)';
     ctx.stroke();
     
     ctx.restore();
     
     time += 1;
     transition += transitionSpeed;
+    
+    // Update animation progress
+    if (animationProgress < 1) {
+        animationProgress += 1 / animationDuration;
+    }
     
     if (transition >= 1) {
         transition = 0;
