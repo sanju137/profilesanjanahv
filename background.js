@@ -28,17 +28,21 @@ function getPoint(graphIndex, theta) {
     
     switch(graphIndex) {
         case 0:
+            // Butterfly curve
             a = (Math.exp(Math.cos(theta)) - 2 * Math.cos(4*theta)) * scale;
             return {x: a * Math.cos(theta), y: a * Math.sin(theta)};
         case 1:
+            // Rose curve
             a = (40 + 30 * Math.sin(time/100)) * (scale / 50);
             r = a * Math.sin(5*theta);
             return {x: r * Math.cos(theta), y: r * Math.sin(theta)};
         case 2:
+            // Cardioid
             a = (35 + 25 * Math.sin(time/80)) * (scale / 50);
             r = a * (1 + Math.cos(theta));
             return {x: r * Math.cos(theta), y: r * Math.sin(theta)};
         case 3:
+            // Astroid
             a = (45 + 35 * Math.cos(time/120)) * (scale / 50);
             return {x: a * Math.pow(Math.cos(theta), 3), y: a * Math.pow(Math.sin(theta), 3)};
         default:
@@ -75,6 +79,7 @@ function animate() {
         }
     }
     
+    // Graph lines remain CYAN
     ctx.strokeStyle = 'rgba(0, 255, 255, 0.7)';
     ctx.lineWidth = 2;
     ctx.shadowBlur = 20;
