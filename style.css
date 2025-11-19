@@ -69,10 +69,9 @@ body {
   color: var(--secondary);
 }
 
-/* FIXED SPACING - Reduced section padding */
 .section {
-  min-height: auto; /* Changed from 100vh */
-  padding: 100px 2rem 60px; /* Reduced padding */
+  min-height: auto;
+  padding: 100px 2rem 60px;
   display: flex;
   align-items: center;
 }
@@ -140,7 +139,6 @@ body {
   transform: translateY(-2px);
 }
 
-/* Mathematical Functions Card */
 .math-card {
   background: var(--card-bg);
   padding: 1.5rem;
@@ -187,7 +185,6 @@ body {
   line-height: 1.4;
 }
 
-/* Skills Section */
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -228,7 +225,6 @@ body {
   font-size: 0.9rem;
 }
 
-/* Projects Section */
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -272,7 +268,6 @@ body {
   border: 1px solid rgba(255, 165, 0, 0.5);
 }
 
-/* Contact Section */
 .contact-info {
   display: flex;
   flex-direction: column;
@@ -317,14 +312,6 @@ body {
   color: var(--secondary);
 }
 
-.section-subtitle {
-  text-align: center;
-  margin-bottom: 2rem;
-  opacity: 0.8;
-  font-size: 1.1rem;
-}
-
-/* Scrollbar for math card */
 .math-card::-webkit-scrollbar {
   width: 6px;
 }
