@@ -12,14 +12,6 @@ let transition = 0;
 const transitionSpeed = 0.004;
 const graphs = 10;
 
-// Multiple graph instances for corner effects
-const graphInstances = [
-    { x: -width * 0.4, y: -height * 0.4, scale: 0.3, speed: 0.3 },
-    { x: width * 0.4, y: -height * 0.4, scale: 0.25, speed: 0.4 },
-    { x: -width * 0.4, y: height * 0.4, scale: 0.2, speed: 0.5 },
-    { x: width * 0.35, y: height * 0.35, scale: 0.35, speed: 0.35 }
-];
-
 window.addEventListener('resize', () => {
     width = window.innerWidth;
     height = window.innerHeight;
@@ -27,12 +19,12 @@ window.addEventListener('resize', () => {
     canvas.height = height;
 });
 
-function getScale(baseScale) {
-    return Math.min(width, height) / 4 * baseScale;
+function getScale() {
+    return Math.min(width, height) / 4;
 }
 
-function getPoint(graphIndex, theta, instanceScale) {
-    const scale = getScale(instanceScale);
+function getPoint(graphIndex, theta) {
+    const scale = getScale();
     let a, r, n;
     
     switch(graphIndex) {
@@ -92,17 +84,25 @@ function lerp(a, b, t) {
     return a + (b - a) * t;
 }
 
-function drawGraphInstance(instance, instanceTime) {
+function animate() {
+    // Clear with more transparency
+    ctx.fillStyle = 'rgba(5, 5, 16, 0.08)';
+    ctx.fillRect(0, 0, width, height);
+    
     ctx.save();
-    ctx.translate(width / 2 + instance.x, height / 2 + instance.y);
+    
+    // Fixed position - emerges from bottom-right corner
+    const offsetX = width * 0.3;
+    const offsetY = height * 0.3;
+    ctx.translate(width / 2 + offsetX, height / 2 + offsetY);
     
     ctx.beginPath();
-    const steps = 400;
+    const steps = 600;
     
     for (let i = 0; i <= steps; i++) {
         const theta = (i / steps) * Math.PI * 2;
-        const p1 = getPoint(currentGraph, theta, instance.scale);
-        const p2 = getPoint((currentGraph + 1) % graphs, theta, instance.scale);
+        const p1 = getPoint(currentGraph, theta);
+        const p2 = getPoint((currentGraph + 1) % graphs, theta);
         
         const x = lerp(p1.x, p2.x, transition);
         const y = lerp(p1.y, p2.y, transition);
@@ -114,30 +114,14 @@ function drawGraphInstance(instance, instanceTime) {
         }
     }
     
-    // REDUCED OPACITY and smaller graphs
-    ctx.strokeStyle = `rgba(0, 255, 255, ${0.3 + 0.2 * Math.sin(instanceTime/30)})`;
-    ctx.lineWidth = 1.5;
-    ctx.shadowBlur = 15;
+    // Reduced opacity
+    ctx.strokeStyle = `rgba(0, 255, 255, 0.4)`;
+    ctx.lineWidth = 2;
+    ctx.shadowBlur = 20;
     ctx.shadowColor = 'rgba(0, 255, 255, 0.3)';
     ctx.stroke();
     
     ctx.restore();
-}
-
-function animate() {
-    // Clear with more transparency for better text visibility
-    ctx.fillStyle = 'rgba(5, 5, 16, 0.05)';
-    ctx.fillRect(0, 0, width, height);
-    
-    // Draw multiple smaller graphs in corners
-    graphInstances.forEach((instance, index) => {
-        const instanceTime = time * instance.speed;
-        drawGraphInstance(instance, instanceTime);
-        
-        // Move instances around for dynamic effect
-        instance.x += Math.cos(instanceTime * 0.01) * 0.5;
-        instance.y += Math.sin(instanceTime * 0.01) * 0.5;
-    });
     
     time += 1;
     transition += transitionSpeed;
