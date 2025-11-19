@@ -20,7 +20,7 @@ window.addEventListener('resize', () => {
 });
 
 function getScale() {
-    return Math.min(width, height) / 4;
+    return Math.min(width, height) / 3;
 }
 
 function getPoint(graphIndex, theta) {
@@ -85,16 +85,13 @@ function lerp(a, b, t) {
 }
 
 function animate() {
-    // Clear with more transparency
-    ctx.fillStyle = 'rgba(5, 5, 16, 0.08)';
+    ctx.fillStyle = 'rgba(5, 5, 16, 0.1)';
     ctx.fillRect(0, 0, width, height);
     
     ctx.save();
     
-    // Fixed position - emerges from bottom-right corner
-    const offsetX = width * 0.3;
-    const offsetY = height * 0.3;
-    ctx.translate(width / 2 + offsetX, height / 2 + offsetY);
+    // ONE BIG CENTER GRAPH (like before)
+    ctx.translate(width / 2, height / 2);
     
     ctx.beginPath();
     const steps = 600;
@@ -114,11 +111,11 @@ function animate() {
         }
     }
     
-    // Reduced opacity
-    ctx.strokeStyle = `rgba(0, 255, 255, 0.4)`;
+    // Reduced opacity for better text visibility
+    ctx.strokeStyle = `rgba(0, 255, 255, 0.5)`;
     ctx.lineWidth = 2;
-    ctx.shadowBlur = 20;
-    ctx.shadowColor = 'rgba(0, 255, 255, 0.3)';
+    ctx.shadowBlur = 25;
+    ctx.shadowColor = 'rgba(0, 255, 255, 0.4)';
     ctx.stroke();
     
     ctx.restore();
